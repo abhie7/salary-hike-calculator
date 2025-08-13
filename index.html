@@ -3,85 +3,350 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Salary Calculator</title>
+<title>Modern Salary Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: linear-gradient(to bottom right, #4facfe, #00f2fe);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
+    * {
         margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
+    
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow-x: hidden;
+    }
+    
+    /* Animated background elements */
+    body::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 75% 75%, rgba(255,255,255,0.05) 0%, transparent 50%);
+        animation: float 20s ease-in-out infinite;
+        pointer-events: none;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(-20px, -20px) rotate(5deg); }
+    }
+    
+    .container {
+        position: relative;
+        z-index: 10;
+        max-width: 500px;
+        width: 100%;
+    }
+    
     .calculator {
-        background: #fff;
-        padding: 20px 30px;
-        border-radius: 12px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        max-width: 420px;
-        width: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        padding: 40px 35px;
+        box-shadow: 
+            0 25px 50px rgba(0, 0, 0, 0.15),
+            0 0 0 1px rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
     }
-    h2 {
+    
+    .calculator:hover {
+        transform: translateY(-5px);
+        box-shadow: 
+            0 35px 60px rgba(0, 0, 0, 0.2),
+            0 0 0 1px rgba(255, 255, 255, 0.3);
+    }
+    
+    .header {
         text-align: center;
-        color: #333;
+        margin-bottom: 35px;
     }
-    label {
-        font-weight: bold;
-        margin-top: 12px;
-        display: block;
-    }
-    input {
-        width: 100%;
-        padding: 8px;
-        margin-top: 4px;
+    
+    .header h1 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         margin-bottom: 8px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        font-size: 16px;
+        letter-spacing: -0.5px;
     }
-    .result {
-        background: #f9f9f9;
-        padding: 12px;
-        border-radius: 8px;
-        margin-top: 12px;
-        font-size: 14px;
-        color: #333;
+    
+    .header p {
+        color: #64748b;
+        font-size: 1rem;
+        font-weight: 400;
     }
+    
+    .input-group {
+        margin-bottom: 25px;
+        position: relative;
+    }
+    
+    .input-group label {
+        display: block;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+        letter-spacing: -0.2px;
+    }
+    
+    .input-wrapper {
+        position: relative;
+    }
+    
+    .input-wrapper::before {
+        content: '₹';
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        font-weight: 500;
+        z-index: 2;
+        pointer-events: none;
+    }
+    
+    .input-group input {
+        width: 100%;
+        padding: 16px 16px 16px 35px;
+        border: 2px solid #e5e7eb;
+        border-radius: 16px;
+        font-size: 1rem;
+        font-weight: 400;
+        font-family: 'Inter', sans-serif;
+        background: rgba(255, 255, 255, 0.8);
+        transition: all 0.3s ease;
+        outline: none;
+    }
+    
+    .input-group input:focus {
+        border-color: #667eea;
+        background: rgba(255, 255, 255, 1);
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .input-group input::placeholder {
+        color: #9ca3af;
+        font-weight: 400;
+    }
+    
+    /* Special styling for percentage input */
+    .percentage-input::before {
+        content: '%';
+        left: auto;
+        right: 16px;
+    }
+    
+    .percentage-input input {
+        padding-right: 35px;
+        padding-left: 16px;
+    }
+    
+    .results {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 20px;
+        padding: 25px;
+        margin-top: 30px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        min-height: 120px;
+        transition: all 0.3s ease;
+    }
+    
+    .results-header {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .results-header::before {
+        content: '📊';
+        font-size: 1.2rem;
+    }
+    
+    .result-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+        font-size: 0.95rem;
+    }
+    
+    .result-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    
+    .result-label {
+        color: #64748b;
+        font-weight: 400;
+    }
+    
+    .result-value {
+        font-weight: 600;
+        color: #1e293b;
+        font-variant-numeric: tabular-nums;
+    }
+    
     .highlight {
-        font-weight: bold;
-        color: #007bff;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
     }
-    @media(max-width: 500px) {
-        .calculator {
+    
+    .empty-state {
+        text-align: center;
+        color: #9ca3af;
+        font-style: italic;
+        padding: 20px;
+        font-size: 0.95rem;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 600px) {
+        body {
             padding: 15px;
         }
+        
+        .calculator {
+            padding: 30px 25px;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+        }
+        
+        .header p {
+            font-size: 0.9rem;
+        }
+        
+        .input-group input {
+            padding: 14px 14px 14px 32px;
+            font-size: 16px; /* Prevents zoom on iOS */
+        }
+        
+        .results {
+            padding: 20px;
+        }
+        
+        .result-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+            padding: 10px 0;
+        }
+        
+        .result-value {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+    }
+    
+    @media (max-width: 400px) {
+        .calculator {
+            padding: 25px 20px;
+        }
+        
+        .header h1 {
+            font-size: 1.6rem;
+        }
+    }
+    
+    /* Smooth animations */
+    .calculator * {
+        transition: all 0.2s ease;
+    }
+    
+    /* Loading state for inputs */
+    .input-group.calculating input {
+        border-color: #667eea;
+        background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 50%, rgba(102, 126, 234, 0.1) 100%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
     }
 </style>
 </head>
 <body>
 
-<div class="calculator">
-    <h2>💼 Smart Salary Calculator</h2>
+<div class="container">
+    <div class="calculator">
+        <div class="header">
+            <h1>💼 Salary Calculator</h1>
+            <p>Smart calculations for your career growth</p>
+        </div>
 
-    <label for="current">Current CTC (₹ per year)</label>
-    <input type="number" id="current" placeholder="Enter current yearly CTC">
+        <div class="input-group">
+            <label for="current">Current Annual CTC</label>
+            <div class="input-wrapper">
+                <input type="number" id="current" placeholder="Enter your current yearly salary">
+            </div>
+        </div>
 
-    <label for="expected">Expected CTC (₹ per year)</label>
-    <input type="number" id="expected" placeholder="Enter expected yearly CTC">
+        <div class="input-group">
+            <label for="expected">Expected Annual CTC</label>
+            <div class="input-wrapper">
+                <input type="number" id="expected" placeholder="Enter your expected yearly salary">
+            </div>
+        </div>
 
-    <label for="hike">Hike %</label>
-    <input type="number" id="hike" placeholder="Enter hike percentage">
+        <div class="input-group">
+            <label for="hike">Salary Hike</label>
+            <div class="input-wrapper percentage-input">
+                <input type="number" id="hike" placeholder="Enter hike percentage" step="0.1">
+            </div>
+        </div>
 
-    <label for="monthly">Monthly Salary (₹)</label>
-    <input type="number" id="monthly" placeholder="Enter monthly salary">
+        <div class="input-group">
+            <label for="monthly">Monthly Salary</label>
+            <div class="input-wrapper">
+                <input type="number" id="monthly" placeholder="Enter monthly salary">
+            </div>
+        </div>
 
-    <div class="result" id="output">Enter any two or more values to see results...</div>
+        <div class="results">
+            <div class="results-header">Calculation Results</div>
+            <div id="output" class="empty-state">
+                Enter any two or more values to see smart calculations...
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
 function formatCurrency(num) {
-    return "₹" + num.toLocaleString("en-IN", {maximumFractionDigits: 2});
+    if (!num || isNaN(num)) return "₹0";
+    return "₹" + Math.round(num).toLocaleString("en-IN");
+}
+
+function formatPercentage(num) {
+    return num.toFixed(1) + "%";
 }
 
 function calculate() {
@@ -91,48 +356,126 @@ function calculate() {
     let monthly = parseFloat(document.getElementById("monthly").value) || null;
     let output = document.getElementById("output");
 
+    // Add calculating animation
+    document.querySelectorAll('.input-group').forEach(group => {
+        group.classList.add('calculating');
+    });
+    
+    setTimeout(() => {
+        document.querySelectorAll('.input-group').forEach(group => {
+            group.classList.remove('calculating');
+        });
+    }, 500);
+
     // Auto-derive values based on inputs
     if (current && expected && !hike) {
         hike = ((expected - current) / current) * 100;
+        document.getElementById("hike").value = hike.toFixed(1);
     }
     else if (current && hike && !expected) {
         expected = current * (1 + hike / 100);
+        document.getElementById("expected").value = Math.round(expected);
     }
     else if (expected && hike && !current) {
         current = expected / (1 + hike / 100);
+        document.getElementById("current").value = Math.round(current);
     }
 
-    // If monthly salary given but not yearly
+    // Handle monthly salary conversions
     if (monthly && !current && !expected) {
-        current = monthly * 12; // treat as current
+        current = monthly * 12;
+        document.getElementById("current").value = Math.round(current);
     }
-    // If yearly given but not monthly
     if (current && !monthly) {
         monthly = current / 12;
+        document.getElementById("monthly").value = Math.round(monthly);
     }
-    if (expected && !monthly && !current) {
+    if (expected && !current && monthly) {
         monthly = expected / 12;
     }
 
-    // Prepare output
+    // Generate results
     let results = [];
-    if (current) results.push(`Current CTC: <span class="highlight">${formatCurrency(current)}</span> / year (${formatCurrency(current/12)} per month)`);
-    if (expected) results.push(`Expected CTC: <span class="highlight">${formatCurrency(expected)}</span> / year (${formatCurrency(expected/12)} per month)`);
-    if (hike !== null && !isNaN(hike)) results.push(`Hike: <span class="highlight">${hike.toFixed(2)}%</span>`);
-    if (monthly && current) results.push(`Monthly Salary (Current): <span class="highlight">${formatCurrency(monthly)}</span>`);
-    if (expected) results.push(`Daily Salary (Expected, approx): <span class="highlight">${formatCurrency(expected/12/22)}</span> (22 working days)`);
+    
+    if (current) {
+        results.push({
+            label: "Current Annual CTC",
+            value: formatCurrency(current)
+        });
+        results.push({
+            label: "Current Monthly Salary",
+            value: formatCurrency(current / 12)
+        });
+    }
+    
+    if (expected) {
+        results.push({
+            label: "Expected Annual CTC",
+            value: formatCurrency(expected)
+        });
+        results.push({
+            label: "Expected Monthly Salary",
+            value: formatCurrency(expected / 12)
+        });
+    }
+    
+    if (hike !== null && !isNaN(hike)) {
+        const hikeClass = hike > 0 ? 'highlight' : '';
+        results.push({
+            label: "Salary Hike",
+            value: `<span class="${hikeClass}">${formatPercentage(hike)}</span>`
+        });
+    }
+    
+    if (current && expected) {
+        const difference = expected - current;
+        results.push({
+            label: "Annual Increase",
+            value: `<span class="highlight">${formatCurrency(difference)}</span>`
+        });
+        results.push({
+            label: "Monthly Increase",
+            value: `<span class="highlight">${formatCurrency(difference / 12)}</span>`
+        });
+    }
+    
+    if (expected) {
+        results.push({
+            label: "Daily Salary (30 working days)",
+            value: formatCurrency(expected / 12 / 30)
+        });
+        results.push({
+            label: "Hourly Rate (9 hrs/day)",
+            value: formatCurrency(expected / 12 / 30 / 9)
+        });
+    }
 
     if (results.length > 0) {
-        output.innerHTML = results.join("<br>");
+        output.innerHTML = results.map(result => 
+            `<div class="result-item">
+                <span class="result-label">${result.label}</span>
+                <span class="result-value">${result.value}</span>
+            </div>`
+        ).join('');
     } else {
-        output.innerHTML = "Enter any two or more values to see results...";
+        output.innerHTML = '<div class="empty-state">Enter any two or more values to see smart calculations...</div>';
     }
 }
 
-// Live update on input
+// Live update on input with debouncing
+let timeoutId;
 document.querySelectorAll("input").forEach(input => {
-    input.addEventListener("input", calculate);
+    input.addEventListener("input", () => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(calculate, 300);
+    });
+    
+    // Immediate calculation on blur
+    input.addEventListener("blur", calculate);
 });
+
+// Initial calculation
+calculate();
 </script>
 
 </body>
