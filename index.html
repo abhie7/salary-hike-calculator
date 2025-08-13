@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Salary Calculator</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to bottom right, #4facfe, #00f2fe);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .calculator {
+        background: #fff;
+        padding: 20px 30px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        max-width: 420px;
+        width: 100%;
+    }
+    h2 {
+        text-align: center;
+        color: #333;
+    }
+    label {
+        font-weight: bold;
+        margin-top: 12px;
+        display: block;
+    }
+    input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 4px;
+        margin-bottom: 8px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+    }
+    .result {
+        background: #f9f9f9;
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 12px;
+        font-size: 14px;
+        color: #333;
+    }
+    .highlight {
+        font-weight: bold;
+        color: #007bff;
+    }
+    @media(max-width: 500px) {
+        .calculator {
+            padding: 15px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="calculator">
+    <h2>💼 Smart Salary Calculator</h2>
+
+    <label for="current">Current CTC (₹ per year)</label>
+    <input type="number" id="current" placeholder="Enter current yearly CTC">
+
+    <label for="expected">Expected CTC (₹ per year)</label>
+    <input type="number" id="expected" placeholder="Enter expected yearly CTC">
+
+    <label for="hike">Hike %</label>
+    <input type="number" id="hike" placeholder="Enter hike percentage">
+
+    <label for="monthly">Monthly Salary (₹)</label>
+    <input type="number" id="monthly" placeholder="Enter monthly salary">
+
+    <div class="result" id="output">Enter any two or more values to see results...</div>
+</div>
+
+<script>
+function formatCurrency(num) {
+    return "₹" + num.toLocaleString("en-IN", {maximumFractionDigits: 2});
+}
+
+function calculate() {
+    let current = parseFloat(document.getElementById("current").value) || null;
+    let expected = parseFloat(document.getElementById("expected").value) || null;
+    let hike = parseFloat(document.getElementById("hike").value) || null;
+    let monthly = parseFloat(document.getElementById("monthly").value) || null;
+    let output = document.getElementById("output");
+
+    // Auto-derive values based on inputs
+    if (current && expected && !hike) {
+        hike = ((expected - current) / current) * 100;
+    }
+    else if (current && hike && !expected) {
+        expected = current * (1 + hike / 100);
+    }
+    else if (expected && hike && !current) {
+        current = expected / (1 + hike / 100);
+    }
+
+    // If monthly salary given but not yearly
+    if (monthly && !current && !expected) {
+        current = monthly * 12; // treat as current
+    }
+    // If yearly given but not monthly
+    if (current && !monthly) {
+        monthly = current / 12;
+    }
+    if (expected && !monthly && !current) {
+        monthly = expected / 12;
+    }
+
+    // Prepare output
+    let results = [];
+    if (current) results.push(`Current CTC: <span class="highlight">${formatCurrency(current)}</span> / year (${formatCurrency(current/12)} per month)`);
+    if (expected) results.push(`Expected CTC: <span class="highlight">${formatCurrency(expected)}</span> / year (${formatCurrency(expected/12)} per month)`);
+    if (hike !== null && !isNaN(hike)) results.push(`Hike: <span class="highlight">${hike.toFixed(2)}%</span>`);
+    if (monthly && current) results.push(`Monthly Salary (Current): <span class="highlight">${formatCurrency(monthly)}</span>`);
+    if (expected) results.push(`Daily Salary (Expected, approx): <span class="highlight">${formatCurrency(expected/12/22)}</span> (22 working days)`);
+
+    if (results.length > 0) {
+        output.innerHTML = results.join("<br>");
+    } else {
+        output.innerHTML = "Enter any two or more values to see results...";
+    }
+}
+
+// Live update on input
+document.querySelectorAll("input").forEach(input => {
+    input.addEventListener("input", calculate);
+});
+</script>
+
+</body>
+</html>
