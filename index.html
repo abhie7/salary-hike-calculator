@@ -3,58 +3,101 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Salary Calculator</title>
+<title>Salary Hike Calculator</title>
 <style>
     body {
-        font-family: Arial, sans-serif;
-        background: linear-gradient(to bottom right, #4facfe, #00f2fe);
+        font-family: 'Inter', system-ui, sans-serif;
+        background: linear-gradient(135deg, #4facfe, #00f2fe);
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
         margin: 0;
+        padding: 20px;
     }
+
     .calculator {
         background: #fff;
-        padding: 20px 30px;
-        border-radius: 12px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        max-width: 420px;
+        padding: 25px 30px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        max-width: 450px;
         width: 100%;
+        transition: 0.3s ease;
     }
+
+    .calculator:hover {
+        transform: translateY(-2px);
+    }
+
     h2 {
         text-align: center;
+        color: #222;
+        margin-bottom: 20px;
+    }
+
+    label {
+        font-weight: 600;
+        display: block;
+        margin-top: 12px;
+        margin-bottom: 5px;
         color: #333;
     }
-    label {
-        font-weight: bold;
-        margin-top: 12px;
-        display: block;
-    }
+
     input {
         width: 100%;
-        padding: 8px;
-        margin-top: 4px;
-        margin-bottom: 8px;
-        border-radius: 6px;
+        padding: 10px 12px;
+        border-radius: 8px;
         border: 1px solid #ccc;
         font-size: 16px;
+        transition: border 0.2s ease;
     }
+
+    input:focus {
+        border-color: #00b3ff;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0,179,255,0.2);
+    }
+
     .result {
-        background: #f9f9f9;
-        padding: 12px;
-        border-radius: 8px;
-        margin-top: 12px;
-        font-size: 14px;
+        background: #f9fafc;
+        border-radius: 10px;
+        padding: 15px 18px;
+        margin-top: 16px;
+        font-size: 15px;
         color: #333;
+        line-height: 1.6;
     }
+
     .highlight {
-        font-weight: bold;
         color: #007bff;
+        font-weight: 600;
     }
+
+    .monthly-highlight {
+        background: #e8f2ff;
+        padding: 2px 6px;
+        border-radius: 6px;
+        color: #0066cc;
+        font-weight: bold;
+    }
+
+    .summary-box {
+        background: #eef9f0;
+        border-left: 5px solid #28a745;
+        padding: 10px 12px;
+        border-radius: 8px;
+        margin-top: 10px;
+        color: #155724;
+        font-weight: 500;
+    }
+
     @media(max-width: 500px) {
         .calculator {
-            padding: 15px;
+            padding: 18px;
+        }
+        input {
+            font-size: 15px;
         }
     }
 </style>
@@ -62,78 +105,84 @@
 <body>
 
 <div class="calculator">
-    <h2>💼 Smart Salary Calculator</h2>
+    <h2>💼 Salary Hike Calculator</h2>
 
     <label for="current">Current CTC (₹ per year)</label>
-    <input type="number" id="current" placeholder="Enter current yearly CTC">
+    <input type="text" id="current" placeholder="X,XX,XXX">
 
     <label for="expected">Expected CTC (₹ per year)</label>
-    <input type="number" id="expected" placeholder="Enter expected yearly CTC">
+    <input type="text" id="expected" placeholder="X,XX,XXX">
 
     <label for="hike">Hike %</label>
-    <input type="number" id="hike" placeholder="Enter hike percentage">
-
-    <label for="monthly">Monthly Salary (₹)</label>
-    <input type="number" id="monthly" placeholder="Enter monthly salary">
+    <input type="number" id="hike" placeholder="XX">
 
     <div class="result" id="output">Enter any two or more values to see results...</div>
 </div>
 
 <script>
+function formatIndianNumber(num) {
+    if (!num) return '';
+    const x = num.toString().replace(/,/g, '');
+    const lastThree = x.substring(x.length - 3);
+    const otherNumbers = x.substring(0, x.length - 3);
+    return otherNumbers !== '' ? otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + ',' + lastThree : lastThree;
+}
+
+function parseNumberIndian(str) {
+    return parseFloat(str.replace(/,/g, '')) || 0;
+}
+
 function formatCurrency(num) {
-    return "₹" + num.toLocaleString("en-IN", {maximumFractionDigits: 2});
+    return "₹" + num.toLocaleString("en-IN");
 }
 
 function calculate() {
-    let current = parseFloat(document.getElementById("current").value) || null;
-    let expected = parseFloat(document.getElementById("expected").value) || null;
-    let hike = parseFloat(document.getElementById("hike").value) || null;
-    let monthly = parseFloat(document.getElementById("monthly").value) || null;
+    let current = parseNumberIndian(document.getElementById("current").value);
+    let expected = parseNumberIndian(document.getElementById("expected").value);
+    let hike = parseFloat(document.getElementById("hike").value);
     let output = document.getElementById("output");
 
-    // Auto-derive values based on inputs
+    // Derive missing value
     if (current && expected && !hike) {
         hike = ((expected - current) / current) * 100;
-    }
-    else if (current && hike && !expected) {
+    } else if (current && hike && !expected) {
         expected = current * (1 + hike / 100);
-    }
-    else if (expected && hike && !current) {
+    } else if (expected && hike && !current) {
         current = expected / (1 + hike / 100);
     }
 
-    // If monthly salary given but not yearly
-    if (monthly && !current && !expected) {
-        current = monthly * 12; // treat as current
-    }
-    // If yearly given but not monthly
-    if (current && !monthly) {
-        monthly = current / 12;
-    }
-    if (expected && !monthly && !current) {
-        monthly = expected / 12;
-    }
-
-    // Prepare output
     let results = [];
-    if (current) results.push(`Current CTC: <span class="highlight">${formatCurrency(current)}</span> / year (${formatCurrency(current/12)} per month)`);
-    if (expected) results.push(`Expected CTC: <span class="highlight">${formatCurrency(expected)}</span> / year (${formatCurrency(expected/12)} per month)`);
-    if (hike !== null && !isNaN(hike)) results.push(`Hike: <span class="highlight">${hike.toFixed(2)}%</span>`);
-    if (monthly && current) results.push(`Monthly Salary (Current): <span class="highlight">${formatCurrency(monthly)}</span>`);
-    if (expected) results.push(`Daily Salary (Current, approx): <span class="highlight">${formatCurrency(current/12/30)}</span> (30 working days)`);
-    if (expected) results.push(`Daily Salary (Expected, approx): <span class="highlight">${formatCurrency(expected/12/30)}</span> (30 working days)`);
+
+    if (current) results.push(`🔴 Current CTC: <span class="highlight">${formatCurrency(current)}</span> / year (<span class="monthly-highlight">${formatCurrency(current / 12)} per month</span>)`);
+    if (expected) results.push(`🟢 Expected CTC: <span class="highlight">${formatCurrency(expected)}</span> / year (<span class="monthly-highlight">${formatCurrency(expected / 12)} per month</span>)`);
+    if (!isNaN(hike) && hike !== 0) results.push(`📈 Hike: <span class="highlight">${hike.toFixed(2)}%</span>`);
+
+    if (current && expected) {
+        results.push(`💰 Increment Amount: <span class="highlight">${formatCurrency(expected - current)}</span> / year`);
+        results.push(`🗓️ Daily Salary (Current): <span class="highlight">${formatCurrency(current / 12 / 30)}</span>`);
+        results.push(`🗓️ Daily Salary (Expected): <span class="highlight">${formatCurrency(expected / 12 / 30)}</span>`);
+        results.push(`⏰ Hourly Salary (Expected): <span class="highlight">${formatCurrency(expected / 12 / 30 / 8)}</span>`);
+    }
 
     if (results.length > 0) {
-        output.innerHTML = results.join("<br>");
+        output.innerHTML = results.join("<br>") +
+            `<div class="summary-box">Summary: Your expected hike gives you an extra ₹${formatIndianNumber(Math.round((expected - current)/12))} per month!</div>`;
     } else {
         output.innerHTML = "Enter any two or more values to see results...";
     }
 }
 
-// Live update on input
-document.querySelectorAll("input").forEach(input => {
-    input.addEventListener("input", calculate);
+// Auto-comma formatting for Indian system
+["current", "expected"].forEach(id => {
+    document.getElementById(id).addEventListener("input", e => {
+        let val = e.target.value.replace(/,/g, '').replace(/\D/g, '');
+        e.target.value = formatIndianNumber(val);
+        calculate();
+    });
 });
+
+// Live update for hike field
+document.getElementById("hike").addEventListener("input", calculate);
 </script>
 
 </body>
