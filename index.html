@@ -11,7 +11,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        min-height: 100vh;
         margin: 0;
         padding: 20px;
     }
@@ -21,7 +21,7 @@
         padding: 25px 30px;
         border-radius: 16px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        max-width: 450px;
+        max-width: 600px;
         width: 100%;
         transition: 0.3s ease;
     }
@@ -36,12 +36,31 @@
         margin-bottom: 20px;
     }
 
+    .input-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .input-group {
+        display: flex;
+        flex-direction: column;
+    }
+
     label {
         font-weight: 600;
-        display: block;
-        margin-top: 12px;
         margin-bottom: 5px;
         color: #333;
+        font-size: 14px;
+    }
+
+    .or-separator {
+        text-align: center;
+        color: #666;
+        font-weight: 600;
+        margin: 5px 0;
+        font-size: 13px;
     }
 
     input {
@@ -51,6 +70,7 @@
         border: 1px solid #ccc;
         font-size: 16px;
         transition: border 0.2s ease;
+        box-sizing: border-box;
     }
 
     input:focus {
@@ -92,7 +112,11 @@
         font-weight: 500;
     }
 
-    @media(max-width: 500px) {
+    @media(max-width: 600px) {
+        .input-row {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
         .calculator {
             padding: 18px;
         }
@@ -107,14 +131,34 @@
 <div class="calculator">
     <h2>💼 Salary Hike Calculator</h2>
 
-    <label for="current">Current CTC (₹ per year)</label>
-    <input type="text" id="current" placeholder="X,XX,XXX">
+    <div class="input-row">
+        <div class="input-group">
+            <label for="currentYear">Current CTC (₹ per year)</label>
+            <input type="text" id="currentYear" placeholder="X,XX,XXX">
+        </div>
+        <div class="input-group">
+            <label for="currentMonth">Current CTC (₹ per month)</label>
+            <input type="text" id="currentMonth" placeholder="XX,XXX">
+        </div>
+    </div>
+    <div class="or-separator">OR</div>
 
-    <label for="expected">Expected CTC (₹ per year)</label>
-    <input type="text" id="expected" placeholder="X,XX,XXX">
+    <div class="input-row">
+        <div class="input-group">
+            <label for="expectedYear">Expected CTC (₹ per year)</label>
+            <input type="text" id="expectedYear" placeholder="X,XX,XXX">
+        </div>
+        <div class="input-group">
+            <label for="expectedMonth">Expected CTC (₹ per month)</label>
+            <input type="text" id="expectedMonth" placeholder="XX,XXX">
+        </div>
+    </div>
+    <div class="or-separator">AND</div>
 
-    <label for="hike">Hike %</label>
-    <input type="number" id="hike" placeholder="XX">
+    <div class="hike-section">
+        <label for="hike">Hike %</label>
+        <input type="number" id="hike" placeholder="XX">
+    </div>
 
     <div class="result" id="output">Enter any two or more values to see results...</div>
 </div>
@@ -137,9 +181,23 @@ function formatCurrency(num) {
 }
 
 function calculate() {
-    let current = parseNumberIndian(document.getElementById("current").value);
-    let expected = parseNumberIndian(document.getElementById("expected").value);
+    // Get all input values
+    let currentYear = parseNumberIndian(document.getElementById("currentYear").value);
+    let currentMonth = parseNumberIndian(document.getElementById("currentMonth").value);
+    let expectedYear = parseNumberIndian(document.getElementById("expectedYear").value);
+    let expectedMonth = parseNumberIndian(document.getElementById("expectedMonth").value);
     let hike = parseFloat(document.getElementById("hike").value);
+
+    // Convert monthly to yearly if monthly is provided
+    if (currentMonth && !currentYear) {
+        currentYear = currentMonth * 12;
+    }
+    if (expectedMonth && !expectedYear) {
+        expectedYear = expectedMonth * 12;
+    }
+
+    let current = currentYear;
+    let expected = expectedYear;
     let output = document.getElementById("output");
 
     // Derive missing value
@@ -161,6 +219,7 @@ function calculate() {
         results.push(`💰 Increment Amount: <span class="highlight">${formatCurrency(expected - current)}</span> / year`);
         results.push(`🗓️ Daily Salary (Current): <span class="highlight">${formatCurrency(current / 12 / 30)}</span>`);
         results.push(`🗓️ Daily Salary (Expected): <span class="highlight">${formatCurrency(expected / 12 / 30)}</span>`);
+        results.push(`⏰ Hourly Salary (Current): <span class="highlight">${formatCurrency(current / 12 / 30 / 8)}</span>`);
         results.push(`⏰ Hourly Salary (Expected): <span class="highlight">${formatCurrency(expected / 12 / 30 / 8)}</span>`);
     }
 
@@ -172,11 +231,24 @@ function calculate() {
     }
 }
 
-// Auto-comma formatting for Indian system
-["current", "expected"].forEach(id => {
+// Auto-comma formatting for Indian system and sync year/month inputs
+["currentYear", "currentMonth", "expectedYear", "expectedMonth"].forEach(id => {
     document.getElementById(id).addEventListener("input", e => {
         let val = e.target.value.replace(/,/g, '').replace(/\D/g, '');
         e.target.value = formatIndianNumber(val);
+
+        // Sync corresponding field
+        const numVal = parseNumberIndian(e.target.value);
+        if (id === "currentYear" && numVal) {
+            document.getElementById("currentMonth").value = formatIndianNumber(Math.round(numVal / 12));
+        } else if (id === "currentMonth" && numVal) {
+            document.getElementById("currentYear").value = formatIndianNumber(numVal * 12);
+        } else if (id === "expectedYear" && numVal) {
+            document.getElementById("expectedMonth").value = formatIndianNumber(Math.round(numVal / 12));
+        } else if (id === "expectedMonth" && numVal) {
+            document.getElementById("expectedYear").value = formatIndianNumber(numVal * 12);
+        }
+
         calculate();
     });
 });
