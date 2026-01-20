@@ -1,260 +1,632 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Salary Hike Calculator</title>
-<style>
-    body {
-        font-family: 'Inter', system-ui, sans-serif;
-        background: linear-gradient(135deg, #4facfe, #00f2fe);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-        padding: 20px;
-    }
-
-    .calculator {
-        background: #fff;
-        padding: 25px 30px;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        max-width: 600px;
-        width: 100%;
-        transition: 0.3s ease;
-    }
-
-    .calculator:hover {
-        transform: translateY(-2px);
-    }
-
-    h2 {
-        text-align: center;
-        color: #222;
-        margin-bottom: 20px;
-    }
-
-    .input-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        margin-bottom: 15px;
-    }
-
-    .input-group {
-        display: flex;
-        flex-direction: column;
-    }
-
-    label {
-        font-weight: 600;
-        margin-bottom: 5px;
-        color: #333;
-        font-size: 14px;
-    }
-
-    .or-separator {
-        text-align: center;
-        color: #666;
-        font-weight: 600;
-        margin: 5px 0;
-        font-size: 13px;
-    }
-
-    input {
-        width: 100%;
-        padding: 10px 12px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        font-size: 16px;
-        transition: border 0.2s ease;
-        box-sizing: border-box;
-    }
-
-    input:focus {
-        border-color: #00b3ff;
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(0,179,255,0.2);
-    }
-
-    .result {
-        background: #f9fafc;
-        border-radius: 10px;
-        padding: 15px 18px;
-        margin-top: 16px;
-        font-size: 15px;
-        color: #333;
-        line-height: 1.6;
-    }
-
-    .highlight {
-        color: #007bff;
-        font-weight: 600;
-    }
-
-    .monthly-highlight {
-        background: #e8f2ff;
-        padding: 2px 6px;
-        border-radius: 6px;
-        color: #0066cc;
-        font-weight: bold;
-    }
-
-    .summary-box {
-        background: #eef9f0;
-        border-left: 5px solid #28a745;
-        padding: 10px 12px;
-        border-radius: 8px;
-        margin-top: 10px;
-        color: #155724;
-        font-weight: 500;
-    }
-
-    @media(max-width: 600px) {
-        .input-row {
-            grid-template-columns: 1fr;
-            gap: 10px;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Salary Hike Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/12740/12740855.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0066cc;
+            --primary-light: #e8f2ff;
+            --accent: #00b3ff;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-secondary: #4b5563;
+            --border: #d1d5db;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
         }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg-gradient);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+        }
+
         .calculator {
-            padding: 18px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            max-width: 550px;
+            width: 100%;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
+
+        .calculator::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--text-main);
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .currency-select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 0.85rem;
+            background-color: #f9fafb;
+            cursor: pointer;
+            outline: none;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
         input {
-            font-size: 15px;
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            background: #fff;
         }
-    }
-</style>
+
+        input:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 179, 255, 0.15);
+        }
+
+        input:disabled {
+            background-color: #f3f4f6;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .or-separator {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 15px 0;
+        }
+
+        .or-separator::before,
+        .or-separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .or-separator:not(:empty)::before {
+            margin-right: .5em;
+        }
+
+        .or-separator:not(:empty)::after {
+            margin-left: .5em;
+        }
+
+        .hike-section {
+            background-color: #f9fafb;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #f3f4f6;
+        }
+
+        .result {
+            background: linear-gradient(to right, #f8faff, #f0f7ff);
+            border: 1px solid #e0e7ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .summary-box {
+            background: #eef9f0;
+            border-left: 5px solid #28a745;
+            padding: 3px 12px;
+            border-radius: 8px;
+            color: #155724;
+            font-weight: 500;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .fetch-info {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .error-msg {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .calculator {
+                padding: 20px;
+                border-radius: 16px;
+            }
+            .input-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .section-header {
+                flex-direction: row;
+                align-items: center;
+            }
+            h2 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
 <div class="calculator">
     <h2>💼 Salary Hike Calculator</h2>
 
+    <!-- Current CTC Section -->
+    <div class="section-header">
+        <span class="section-title">Current CTC</span>
+        <select id="currentCurrency" class="currency-select">
+            <option value="inr" selected>🇮🇳 INR</option>
+            <option value="usd">🇺🇸 USD</option>
+            <option value="eur">🇪🇺 EUR</option>
+            <option value="gbp">🇬🇧 GBP</option>
+            <option value="aed">🇦🇪 AED</option>
+            <option value="aud">🇦🇺 AUD</option>
+            <option value="cad">🇨🇦 CAD</option>
+            <option value="sgd">🇸🇬 SGD</option>
+            <option value="jpy">🇯🇵 JPY</option>
+            <option value="cny">🇨🇳 CNY</option>
+        </select>
+    </div>
     <div class="input-row">
         <div class="input-group">
-            <label for="currentYear">Current CTC (₹ per year)</label>
-            <input type="text" id="currentYear" placeholder="X,XX,XXX">
+            <label for="currentYear">Yearly</label>
+            <input type="text" id="currentYear" placeholder="e.g. 10,00,000">
         </div>
         <div class="input-group">
-            <label for="currentMonth">Current CTC (₹ per month)</label>
-            <input type="text" id="currentMonth" placeholder="XX,XXX">
+            <label for="currentMonth">Monthly</label>
+            <input type="text" id="currentMonth" placeholder="e.g. 83,333">
         </div>
     </div>
-    <div class="or-separator">OR</div>
 
-    <div class="input-row">
-        <div class="input-group">
-            <label for="expectedYear">Expected CTC (₹ per year)</label>
-            <input type="text" id="expectedYear" placeholder="X,XX,XXX">
-        </div>
-        <div class="input-group">
-            <label for="expectedMonth">Expected CTC (₹ per month)</label>
-            <input type="text" id="expectedMonth" placeholder="XX,XXX">
-        </div>
-    </div>
     <div class="or-separator">AND</div>
 
-    <div class="hike-section">
-        <label for="hike">Hike %</label>
-        <input type="number" id="hike" placeholder="XX">
+    <!-- Expected CTC Section -->
+    <div class="section-header">
+        <span class="section-title">Expected CTC</span>
+        <select id="expectedCurrency" class="currency-select">
+            <option value="inr" selected>🇮🇳 INR</option>
+            <option value="usd">🇺🇸 USD</option>
+            <option value="eur">🇪🇺 EUR</option>
+            <option value="gbp">🇬🇧 GBP</option>
+            <option value="aed">🇦🇪 AED</option>
+            <option value="aud">🇦🇺 AUD</option>
+            <option value="cad">🇨🇦 CAD</option>
+            <option value="sgd">🇸🇬 SGD</option>
+            <option value="jpy">🇯🇵 JPY</option>
+            <option value="cny">🇨🇳 CNY</option>
+        </select>
+    </div>
+    <div class="input-row">
+        <div class="input-group">
+            <label for="expectedYear">Yearly</label>
+            <input type="text" id="expectedYear" placeholder="Enter Expected Yearly">
+        </div>
+        <div class="input-group">
+            <label for="expectedMonth">Monthly</label>
+            <input type="text" id="expectedMonth" placeholder="Enter Expected Monthly">
+        </div>
     </div>
 
-    <div class="result" id="output">Enter any two or more values to see results...</div>
+    <div class="or-separator">OR</div>
+
+    <!-- Hike Section -->
+    <div class="hike-section">
+        <div class="section-header" style="margin-bottom: 5px;">
+            <span class="section-title">Hike Percentage</span>
+        </div>
+        <div class="input-group">
+            <label for="hike" style="display:none">Hike %</label>
+            <input type="number" id="hike" placeholder="e.g. 30" enterkeyhint="done">
+        </div>
+    </div>
+
+    <div class="result" id="output">
+        <div style="text-align:center; color:#6b7280;">Enter Current CTC &amp; (Expected CTC OR Hike %)</div>
+    </div>
+
+    <div class="fetch-info" id="rateInfo">Loading currency rates...</div>
 </div>
 
 <script>
-function formatIndianNumber(num) {
-    if (!num) return '';
-    const x = num.toString().replace(/,/g, '');
-    const lastThree = x.substring(x.length - 3);
-    const otherNumbers = x.substring(0, x.length - 3);
-    return otherNumbers !== '' ? otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + ',' + lastThree : lastThree;
-}
+    // --- Configuration & State ---
+    const API_URL = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json";
+    let exchangeRates = { usd: 1 }; // Default fallback
+    let ratesDate = "";
 
-function parseNumberIndian(str) {
-    return parseFloat(str.replace(/,/g, '')) || 0;
-}
+    // DOM Elements
+    const els = {
+        currentYear: document.getElementById('currentYear'),
+        currentMonth: document.getElementById('currentMonth'),
+        currentCurrency: document.getElementById('currentCurrency'),
+        expectedYear: document.getElementById('expectedYear'),
+        expectedMonth: document.getElementById('expectedMonth'),
+        expectedCurrency: document.getElementById('expectedCurrency'),
+        hike: document.getElementById('hike'),
+        output: document.getElementById('output'),
+        rateInfo: document.getElementById('rateInfo')
+    };
 
-function formatCurrency(num) {
-    return "₹" + num.toLocaleString("en-IN");
-}
+    // --- Currency Logic ---
+    async function fetchRates() {
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            if (data && data.usd) {
+                exchangeRates = data.usd;
+                ratesDate = data.date;
+                els.rateInfo.textContent = `Currency rates updated: ${ratesDate}`;
 
-function calculate() {
-    // Get all input values
-    let currentYear = parseNumberIndian(document.getElementById("currentYear").value);
-    let currentMonth = parseNumberIndian(document.getElementById("currentMonth").value);
-    let expectedYear = parseNumberIndian(document.getElementById("expectedYear").value);
-    let expectedMonth = parseNumberIndian(document.getElementById("expectedMonth").value);
-    let hike = parseFloat(document.getElementById("hike").value);
-
-    // Convert monthly to yearly if monthly is provided
-    if (currentMonth && !currentYear) {
-        currentYear = currentMonth * 12;
-    }
-    if (expectedMonth && !expectedYear) {
-        expectedYear = expectedMonth * 12;
-    }
-
-    let current = currentYear;
-    let expected = expectedYear;
-    let output = document.getElementById("output");
-
-    // Derive missing value
-    if (current && expected && !hike) {
-        hike = ((expected - current) / current) * 100;
-    } else if (current && hike && !expected) {
-        expected = current * (1 + hike / 100);
-    } else if (expected && hike && !current) {
-        current = expected / (1 + hike / 100);
-    }
-
-    let results = [];
-
-    if (current) results.push(`🔴 Current CTC: <span class="highlight">${formatCurrency(current)}</span> / year (<span class="monthly-highlight">${formatCurrency(current / 12)} per month</span>)`);
-    if (expected) results.push(`🟢 Expected CTC: <span class="highlight">${formatCurrency(expected)}</span> / year (<span class="monthly-highlight">${formatCurrency(expected / 12)} per month</span>)`);
-    if (!isNaN(hike) && hike !== 0) results.push(`📈 Hike: <span class="highlight">${hike.toFixed(2)}%</span>`);
-
-    if (current && expected) {
-        results.push(`💰 Increment Amount: <span class="highlight">${formatCurrency(expected - current)}</span> / year`);
-        results.push(`🗓️ Daily Salary (Current): <span class="highlight">${formatCurrency(current / 12 / 30)}</span>`);
-        results.push(`🗓️ Daily Salary (Expected): <span class="highlight">${formatCurrency(expected / 12 / 30)}</span>`);
-        results.push(`⏰ Hourly Salary (Current): <span class="highlight">${formatCurrency(current / 12 / 30 / 8)}</span>`);
-        results.push(`⏰ Hourly Salary (Expected): <span class="highlight">${formatCurrency(expected / 12 / 30 / 8)}</span>`);
+                // If it's the first load, pull from URL after rates are ready
+                // This ensures calculations are accurate with fresh rates
+                if (!els.currentYear.value && !els.hike.value) {
+                     loadFromURL();
+                } else {
+                     calculate(); // Recalc if data loads late
+                }
+            }
+        } catch (e) {
+            console.error("Failed to fetch rates", e);
+            els.rateInfo.textContent = "Using offline approximate rates (Network Error)";
+            // Fallback hardcoded for demo safety
+            exchangeRates = { usd: 1, inr: 84, eur: 0.92, gbp: 0.79, aed: 3.67, aud: 1.52, cad: 1.35, sgd: 1.34, jpy: 148, cny: 7.19 };
+            loadFromURL();
+        }
     }
 
-    if (results.length > 0) {
-        output.innerHTML = results.join("<br>") +
-            `<div class="summary-box">Summary: Your expected hike gives you an extra ₹${formatIndianNumber(Math.round((expected - current)/12))} per month!</div>`;
-    } else {
-        output.innerHTML = "Enter any two or more values to see results...";
+    function convert(amount, fromCurr, toCurr) {
+        if (!amount) return 0;
+        const fromRate = exchangeRates[fromCurr] || 1;
+        const toRate = exchangeRates[toCurr] || 1;
+        // Convert input -> USD -> output
+        const inUsd = amount / fromRate;
+        return inUsd * toRate;
     }
-}
 
-// Auto-comma formatting for Indian system and sync year/month inputs
-["currentYear", "currentMonth", "expectedYear", "expectedMonth"].forEach(id => {
-    document.getElementById(id).addEventListener("input", e => {
-        let val = e.target.value.replace(/,/g, '').replace(/\D/g, '');
-        e.target.value = formatIndianNumber(val);
+    function formatMoney(amount, currency) {
+        try {
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: currency.toUpperCase(),
+                maximumFractionDigits: 0
+            }).format(amount);
+        } catch (e) {
+            return amount.toFixed(0);
+        }
+    }
 
-        // Sync corresponding field
-        const numVal = parseNumberIndian(e.target.value);
-        if (id === "currentYear" && numVal) {
-            document.getElementById("currentMonth").value = formatIndianNumber(Math.round(numVal / 12));
-        } else if (id === "currentMonth" && numVal) {
-            document.getElementById("currentYear").value = formatIndianNumber(numVal * 12);
-        } else if (id === "expectedYear" && numVal) {
-            document.getElementById("expectedMonth").value = formatIndianNumber(Math.round(numVal / 12));
-        } else if (id === "expectedMonth" && numVal) {
-            document.getElementById("expectedYear").value = formatIndianNumber(numVal * 12);
+    // --- Formatting Helpers ---
+    function parseRaw(val) {
+        return parseFloat(val.replace(/[^0-9.]/g, '')) || 0;
+    }
+
+    function formatInput(val) {
+        if (!val) return '';
+        const num = parseRaw(val.toString());
+        if (num === 0) return '';
+        // Use Indian formatting for display
+        const x = num.toString();
+        const lastThree = x.substring(x.length - 3);
+        const otherNumbers = x.substring(0, x.length - 3);
+        const res = otherNumbers !== '' ? otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + ',' + lastThree : lastThree;
+        return res;
+    }
+
+    // --- Core Logic ---
+
+    // 1. Conflict Resolution
+    function clearExpected() {
+        els.expectedYear.value = '';
+        els.expectedMonth.value = '';
+    }
+
+    function clearHike() {
+        els.hike.value = '';
+    }
+
+    // 2. Calculation
+    function calculate() {
+        const curCurrency = els.currentCurrency.value;
+        const expCurrency = els.expectedCurrency.value; // Acts as Target Currency
+
+        const curYearVal = parseRaw(els.currentYear.value);
+        const curMonthVal = parseRaw(els.currentMonth.value);
+
+        const expYearVal = parseRaw(els.expectedYear.value);
+        const expMonthVal = parseRaw(els.expectedMonth.value);
+
+        const hikeVal = parseFloat(els.hike.value);
+
+        // Determine Base Current Annual
+        let currentAnnual = curYearVal || (curMonthVal * 12) || 0;
+
+        // Logic Branching
+        let expectedAnnual = 0;
+        let calculatedHike = 0;
+        let resultType = ""; // 'hike' (calculated hike) or 'expected' (calculated expected)
+
+        if (currentAnnual > 0) {
+            // Case A: User entered Current + Expected (Conflict rule ensures Hike is empty)
+            if ((expYearVal > 0 || expMonthVal > 0) && !hikeVal) {
+                let inputExpectedAnnual = expYearVal || (expMonthVal * 12);
+
+                // We need to compare Current vs Expected
+                // Convert Expected to Current Currency to calculate Hike %
+                // Or better: Convert both to USD to compare
+                const currentInUSD = convert(currentAnnual, curCurrency, 'usd');
+                const expectedInUSD = convert(inputExpectedAnnual, expCurrency, 'usd');
+
+                calculatedHike = ((expectedInUSD - currentInUSD) / currentInUSD) * 100;
+                expectedAnnual = inputExpectedAnnual; // Keep in its original currency
+                resultType = "hike_calc";
+            }
+            // Case B: User entered Current + Hike (Conflict rule ensures Expected is empty)
+            else if (hikeVal && (expYearVal === 0 && expMonthVal === 0)) {
+                calculatedHike = hikeVal;
+
+                // Expected = Current * (1 + Hike/100)
+                // Result must be in expCurrency (Target Currency)
+                const currentInTarget = convert(currentAnnual, curCurrency, expCurrency);
+                expectedAnnual = currentInTarget * (1 + hikeVal / 100);
+                resultType = "expected_calc";
+            }
         }
 
-        calculate();
-    });
-});
+        renderResults(currentAnnual, curCurrency, expectedAnnual, expCurrency, calculatedHike, resultType);
+        updateURL();
+    }
 
-// Live update for hike field
-document.getElementById("hike").addEventListener("input", calculate);
+    function renderResults(current, cCurr, expected, eCurr, hike, type) {
+        if (!current && !expected && !hike) {
+            els.output.innerHTML = '<div style="text-align:center; color:#6b7280;">Enter Current CTC &amp; (Expected CTC OR Hike %)</div>';
+            return;
+        }
+
+        let html = '';
+
+        // Row 1: Current
+        if (current) {
+            html += `<div>🔴 Current: <span class="highlight">${formatMoney(current, cCurr)}</span>/yr <span class="badge">${formatMoney(current/12, cCurr)}/mo</span></div>`;
+        }
+
+        // Row 2: Expected
+        if (expected) {
+            html += `<div style="margin-top:10px;">🟢 Expected: <span class="highlight">${formatMoney(expected, eCurr)}</span>/yr <span class="badge">${formatMoney(expected/12, eCurr)}/mo</span></div>`;
+        }
+
+        // Row 3: Hike
+        if (hike || hike === 0) {
+            html += `<div style="margin-top:10px;">📈 Hike: <span class="highlight">${hike.toFixed(2)}%</span></div>`;
+        }
+
+        // Row 4: Daily Current CTC
+        if (current) {
+            html += `<div style="margin-top:10px;">🗓️ Daily Salary (Current): <span class="highlight">${formatMoney(current/12/30, cCurr)}</span>/day</div>`;
+        }
+
+        // Row 5: Daily Expected CTC
+        if (expected) {
+            html += `<div style="margin-top:10px;">🗓️ Daily Salary (Expected): <span class="highlight">${formatMoney(expected/12/30, eCurr)}</span>/day</div>`;
+        }
+
+        // Row 6: Weekly Current CTC
+        if (current) {
+            html += `<div style="margin-top:10px;">💸 Weekly Salary (Current): <span class="highlight">${formatMoney(current/12/4, cCurr)}</span>/week</div>`;
+        }
+
+        // Row 7: Weekly Expected CTC
+        if (expected) {
+            html += `<div style="margin-top:10px;">💸 Weekly Salary (Expected): <span class="highlight">${formatMoney(expected/12/4, eCurr)}</span>/week</div>`;
+        }
+
+        // Row 8: Hourly Current CTC
+        if (current) {
+            html += `<div style="margin-top:10px;">⏰ Hourly Salary (Current): <span class="highlight">${formatMoney(current/12/30/9, cCurr)}</span>/hour</div>`;
+        }
+
+        // Row 9: Hourly Expected CTC
+        if (expected) {
+            html += `<div style="margin-top:10px;">⏰ Hourly Salary (Expected): <span class="highlight">${formatMoney(expected/12/30/9, eCurr)}</span>/hour</div>`;
+        }
+
+        // Row 10: Extra Details (Differences)
+        if (current && expected) {
+            // Calculate Difference in Target Currency (Expected Currency)
+            const currentInTarget = convert(current, cCurr, eCurr);
+            const diff = expected - currentInTarget;
+
+            if (diff > 0) {
+                 html += `<div style="margin-top:10px;"><span class="summary-box">💰 Summary: Your expected hike gives you an extra <strong >${formatMoney(diff, eCurr)}</strong>/yr, which is equivalent to <strong>${formatMoney(diff/12, eCurr)}</strong>/mo, or <strong>${formatMoney(diff/12/30/9, eCurr)}</strong>/hour.</div>`;
+            }
+        }
+
+        els.output.innerHTML = html;
+    }
+
+    // --- URL State Sync ---
+    function updateURL() {
+        const params = new URLSearchParams();
+
+        if (els.currentYear.value) params.set('cy', els.currentYear.value);
+        if (els.currentCurrency.value !== 'inr') params.set('cc', els.currentCurrency.value);
+
+        if (els.expectedYear.value) params.set('ey', els.expectedYear.value);
+        if (els.expectedCurrency.value !== 'inr') params.set('ec', els.expectedCurrency.value);
+
+        if (els.hike.value) params.set('h', els.hike.value);
+
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.replaceState({}, '', newUrl);
+    }
+
+    function loadFromURL() {
+        const params = new URLSearchParams(window.location.search);
+
+        if (params.has('cc')) els.currentCurrency.value = params.get('cc');
+        if (params.has('ec')) els.expectedCurrency.value = params.get('ec');
+
+        if (params.has('cy')) {
+            els.currentYear.value = params.get('cy');
+            // Trigger sync to monthly
+            syncInputs(true, els.currentYear.value, els.currentYear, els.currentMonth);
+        }
+
+        if (params.has('ey')) {
+            els.expectedYear.value = params.get('ey');
+            syncInputs(true, els.expectedYear.value, els.expectedYear, els.expectedMonth);
+        }
+
+        if (params.has('h')) {
+            els.hike.value = params.get('h');
+        }
+
+        // Calculate once fields are populated
+        calculate();
+    }
+
+    // --- Events ---
+
+    // 1. Sync Year/Month fields
+    function syncInputs(isYear, val, yearEl, monthEl) {
+        const num = parseRaw(val);
+        if (isYear) {
+            if (num) monthEl.value = formatInput(Math.round(num / 12));
+            else monthEl.value = '';
+        } else {
+            if (num) yearEl.value = formatInput(num * 12);
+            else yearEl.value = '';
+        }
+    }
+
+    function setupSync(yearId, monthId) {
+        const yEl = document.getElementById(yearId);
+        const mEl = document.getElementById(monthId);
+
+        yEl.addEventListener('input', (e) => {
+            e.target.value = formatInput(e.target.value); // Allow typing, format on fly
+            syncInputs(true, e.target.value, yEl, mEl);
+            calculate();
+        });
+
+        mEl.addEventListener('input', (e) => {
+            e.target.value = formatInput(e.target.value);
+            syncInputs(false, e.target.value, yEl, mEl);
+            calculate();
+        });
+    }
+
+    setupSync('currentYear', 'currentMonth');
+    setupSync('expectedYear', 'expectedMonth');
+
+    // 2. Conflict Handling
+    ['expectedYear', 'expectedMonth'].forEach(id => {
+        document.getElementById(id).addEventListener('input', () => {
+            if (els.expectedYear.value || els.expectedMonth.value) {
+                clearHike();
+                calculate();
+            }
+        });
+    });
+
+    els.hike.addEventListener('input', () => {
+        if (els.hike.value) {
+            clearExpected();
+            calculate();
+        }
+    });
+
+    // 3. Currency Change
+    els.currentCurrency.addEventListener('change', calculate);
+    els.expectedCurrency.addEventListener('change', calculate);
+
+    // Initial Load - triggered by fetchRates or fallback
+    fetchRates();
+
 </script>
 
 </body>
